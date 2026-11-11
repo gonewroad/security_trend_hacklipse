@@ -1,6 +1,9 @@
-# 제목에 포함되면 스코어에 +10을 주는 긴급 키워드 목록이다.
+# 스코어링과 배지 판정에 쓰는 키워드 목록이다.
 # 운영하면서 가장 자주 바뀌는 부분이므로 코드가 아니라 이 파일에서 관리한다.
-# 비교는 대소문자를 무시한다.
+# 비교는 전부 대소문자를 무시한다.
+
+# 제목에 포함되면 스코어에 +10을 준다.
+# 본문까지 보면 거의 모든 기사가 걸리므로 제목에서만 본다.
 urgentKeywords:
   - 0-day
   - zero-day
@@ -11,3 +14,26 @@ urgentKeywords:
   - 긴급
   - 악용
   - 공격 확인
+
+# 제목이나 본문에 포함되면 activeExploit 배지를 붙인다.
+# 배지 다섯 종류를 코드에 키워드를 박지 않고 판정하기 위해 분리했다.
+activeExploitKeywords:
+  - actively exploited
+  - exploited in the wild
+  - in-the-wild
+  - under active attack
+  - exploitation detected
+  - 악용 중
+  - 공격 확인
+  - 침해 확인
+
+# 제목이나 본문에 포함되면 patchAvailable 배지를 붙인다.
+patchAvailableKeywords:
+  - patch available
+  - security update
+  - patched in
+  - fixes
+  - hotfix
+  - 보안 업데이트
+  - 패치 배포
+  - 업데이트 권고

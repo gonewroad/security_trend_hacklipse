@@ -188,7 +188,14 @@ export function normalizeItem(raw, source, collectedAt) {
     lang: source.lang,
     score: 0,
     badges: [...new Set(raw.badges ?? [])],
-    cve: extractCves(title, descriptionText, raw.cveHint ?? ''),
+    // 소스가 CVE 번호를 메타데이터로 제공하면 그것만 쓴다.
+    // 본문에서 긁으면 "CVE-A와 연계될 수 있다" 같은 상호 참조까지 끌려와
+    // 서로 다른 취약점이 같은 CVE를 공유하는 것처럼 보이고, 중복 제거가 둘을 하나로 합쳐 버린다.
+    // (CISA KEV의 shortDescription이 실제로 다른 CVE를 언급한다.)
+    cve:
+      Array.isArray(raw.authoritativeCves) && raw.authoritativeCves.length > 0
+        ? [...new Set(raw.authoritativeCves.map((cve) => String(cve).toUpperCase()))].sort()
+        : extractCves(title, descriptionText, raw.cveHint ?? ''),
     alsoFrom: [],
 
     // 아래 두 필드는 파일에 쓰지 않는다. 요약·중복 제거 단계에서만 쓰는 내부 값이다.

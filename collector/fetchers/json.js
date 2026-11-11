@@ -35,7 +35,9 @@ function mapKevEntry(entry) {
     url: cveId === '' ? '' : nvdDetailUrl(cveId),
     description: typeof entry.shortDescription === 'string' ? entry.shortDescription : '',
     publishedAtRaw: typeof entry.dateAdded === 'string' ? entry.dateAdded : '',
-    cveHint: cveId,
+    // KEV는 항목당 CVE가 하나로 정해져 있다. 본문의 상호 참조 CVE를 끌어오지 않도록
+    // 권위 있는 값으로 넘긴다.
+    authoritativeCves: cveId === '' ? [] : [cveId],
     badges,
   };
 }

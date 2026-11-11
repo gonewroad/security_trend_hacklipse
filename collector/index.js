@@ -14,6 +14,8 @@ import YAML from 'yaml';
 
 import { createLimiter, loadHttpCache, saveHttpCache, shortErrorReason } from './http.js';
 import { normalizeItem, toIsoSeconds } from './normalize.js';
+import { dedupeItems } from './dedupe.js';
+import { loadKeywords, scoreItems } from './score.js';
 import {
   buildFeed,
   decideSourceStatus,
@@ -101,6 +103,7 @@ function newestPublishedAt(items) {
 
 export async function runCollection({ tierFilter = null, now = new Date() } = {}) {
   const sources = await loadSources();
+  const keywords = await loadKeywords();
   const previousFeed = await loadPreviousFeed();
   const httpCache = await loadHttpCache();
   const limit = createLimiter(MAX_CONCURRENT_REQUESTS);
@@ -171,10 +174,14 @@ export async function runCollection({ tierFilter = null, now = new Date() } = {}
 
   await saveHttpCache(httpCache);
 
-  // 발행 시각 최신순으로 둔다. 스코어링은 Phase 2에서 붙인다.
-  items.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  // 정규화 -> 중복 제거 -> 스코어링 순서로 처리한다.
+  // 스코어링은 중복 제거 뒤에 해야 alsoFrom 가산점이 반영된다.
+  const beforeDedupe = items.length;
+  const deduped = dedupeItems(items);
+  scoreItems(deduped, { keywords, now });
+  console.log(`  중복 제거: ${beforeDedupe}건 -> ${deduped.length}건`);
 
-  const feed = buildFeed({ items, sources: sourceStates, now });
+  const feed = buildFeed({ items: deduped, sources: sourceStates, now });
   const writeResult = await writeFeedAtomically(feed, previousFeed);
 
   return { feed, writeResult, previousFeed };

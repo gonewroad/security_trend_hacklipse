@@ -1,7 +1,5 @@
 # 티어는 수집 주기와 화면 우선순위를 동시에 정한다
 # T1 15분 / T2 15분 / T3 30분 / T4 30분
-#
-# Phase 1 단계: T1 두 개만 등록해 끝까지 한 번 돌린다.
 
 sources:
   # --- T1: 악용 중인 취약점. 이 둘은 반드시 화면에 보여야 한다 ---
@@ -18,4 +16,80 @@ sources:
     type: rss
     url: https://knvd.krcert.or.kr/rss/security/notice
     lang: ko
+    enabled: true
+
+  # --- T2: 국내 매체 ---
+  - id: boannews
+    name: 보안뉴스
+    tier: T2
+    type: rss
+    url: https://www.boannews.com/rss/allArticle.xml
+    lang: ko
+    enabled: true
+  - id: boannews-incident
+    name: 보안뉴스 사건·사고
+    tier: T2
+    type: rss
+    url: https://www.boannews.com/rss/S1N2.xml
+    lang: ko
+    enabled: true
+  - id: dailysecu
+    name: 데일리시큐
+    tier: T2
+    type: rss
+    url: https://www.dailysecu.com/rss/allArticle.xml
+    lang: ko
+    enabled: true
+
+  # --- T3: 해외 매체·연구소 ---
+  - id: bleepingcomputer
+    name: BleepingComputer
+    tier: T3
+    type: rss
+    url: https://www.bleepingcomputer.com/feed/
+    lang: en
+    enabled: true
+  - id: thehackernews
+    name: The Hacker News
+    tier: T3
+    type: rss
+    url: https://feeds.feedburner.com/TheHackersNews
+    lang: en
+    enabled: true
+  - id: krebs
+    name: Krebs on Security
+    tier: T3
+    type: rss
+    url: https://krebsonsecurity.com/feed/
+    lang: en
+    enabled: true
+  - id: securityweek
+    name: SecurityWeek
+    tier: T3
+    type: rss
+    url: https://www.securityweek.com/feed/
+    lang: en
+    enabled: true
+  - id: projectzero
+    name: Google Project Zero
+    tier: T3
+    type: atom
+    url: https://projectzero.google/feed.xml
+    lang: en
+    enabled: true
+
+  # --- T4: 연구자·소셜. 보조 열에만 표시한다 ---
+  - id: bsky-cve
+    name: Bluesky CVE
+    tier: T4
+    type: bsky
+    url: https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=CVE&limit=25
+    lang: en
+    enabled: true
+  - id: infosec-exchange
+    name: infosec.exchange
+    tier: T4
+    type: rss
+    url: https://infosec.exchange/tags/infosec.rss
+    lang: en
     enabled: true
