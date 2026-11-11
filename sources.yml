@@ -1,0 +1,21 @@
+# 티어는 수집 주기와 화면 우선순위를 동시에 정한다
+# T1 15분 / T2 15분 / T3 30분 / T4 30분
+#
+# Phase 1 단계: T1 두 개만 등록해 끝까지 한 번 돌린다.
+
+sources:
+  # --- T1: 악용 중인 취약점. 이 둘은 반드시 화면에 보여야 한다 ---
+  - id: cisa-kev
+    name: CISA KEV
+    tier: T1
+    type: json
+    url: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+    lang: en
+    enabled: true
+  - id: knvd
+    name: KNVD 보안공지
+    tier: T1
+    type: rss
+    url: https://knvd.krcert.or.kr/rss/security/notice
+    lang: ko
+    enabled: true

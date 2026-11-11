@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1920" />
+    <!-- 뷰어는 자기 호스트의 data/feed.json 하나만 받는다. 외부 도메인 요청을 CSP로 막는다. -->
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self'" />
+    <title>보안 동향 월보드</title>
+  </head>
+  <body>
+    <h1>보안 동향 월보드</h1>
+    <!-- JS가 아예 동작하지 않아도 흰 화면보다는 낫다. -->
+    <p id="fallback">데이터를 불러오는 중이다. 이 문구가 계속 보이면 뷰어 스크립트가 동작하지 않는 상태다.</p>
+    <div id="status"></div>
+    <ul id="items"></ul>
+    <script src="app.js"></script>
+  </body>
+</html>

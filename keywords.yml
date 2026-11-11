@@ -1,0 +1,13 @@
+# 제목에 포함되면 스코어에 +10을 주는 긴급 키워드 목록이다.
+# 운영하면서 가장 자주 바뀌는 부분이므로 코드가 아니라 이 파일에서 관리한다.
+# 비교는 대소문자를 무시한다.
+urgentKeywords:
+  - 0-day
+  - zero-day
+  - actively exploited
+  - RCE
+  - unauthenticated
+  - 제로데이
+  - 긴급
+  - 악용
+  - 공격 확인
