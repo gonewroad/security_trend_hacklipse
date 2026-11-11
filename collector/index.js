@@ -16,6 +16,7 @@ import { createLimiter, loadHttpCache, saveHttpCache, shortErrorReason } from '.
 import { normalizeItem, toIsoSeconds } from './normalize.js';
 import { dedupeItems } from './dedupe.js';
 import { loadKeywords, scoreItems } from './score.js';
+import { summarize } from './summarize.js';
 import {
   buildFeed,
   decideSourceStatus,
@@ -180,6 +181,18 @@ export async function runCollection({ tierFilter = null, now = new Date() } = {}
   const deduped = dedupeItems(items);
   scoreItems(deduped, { keywords, now });
   console.log(`  중복 제거: ${beforeDedupe}건 -> ${deduped.length}건`);
+
+  // 요약 모듈. 실패해도 수집을 멈추지 않는다. 요약은 편의 기능이고 원문 제목이 진짜 데이터다.
+  try {
+    const summaryStats = await summarize(deduped, { now });
+    console.log(
+      `  요약: 캐시 ${summaryStats.fromCache}건, 피드 ${summaryStats.fromFeed}건, ` +
+        `신규 ${summaryStats.applied}건(${summaryStats.requested}요청), ` +
+        `폐기 ${summaryStats.rejected}건, 예산 초과 ${summaryStats.skippedByBudget}건`,
+    );
+  } catch (error) {
+    console.log(`  요약 단계 건너뜀(계속 진행): ${shortErrorReason(error)}`);
+  }
 
   const feed = buildFeed({ items: deduped, sources: sourceStates, now });
   const writeResult = await writeFeedAtomically(feed, previousFeed);

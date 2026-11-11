@@ -1,0 +1,26 @@
+# NAS Docker 구성(운영 기본).
+#
+# collector는 ./data에 feed.json을 쓰고, web(nginx)은 그 디렉터리를 뷰어 밑에 붙여 제공한다.
+# 수집기와 뷰어가 파일 하나로만 만나므로 서로를 몰라도 된다.
+#
+# 처음 띄우기 전에 ./data와 ./cache 디렉터리를 만들고 .env를 준비한다.
+#   mkdir -p data cache && cp .env.example .env
+
+services:
+  collector:
+    build: .
+    volumes:
+      - ./data:/app/public/data
+      - ./cache:/app/cache
+    env_file: .env
+    restart: unless-stopped
+    command: ["node", "scheduler.js"]
+
+  web:
+    image: nginx:alpine
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
+      - ./data:/usr/share/nginx/html/data:ro
+    ports:
+      - "8080:80"
+    restart: unless-stopped

@@ -94,7 +94,31 @@ export function stripHtml(raw) {
   let text = decodeEntities(raw);
   text = text.replace(/<[^>]*>/g, ' ');
   text = decodeEntities(text);
-  return text.replace(/\s+/g, ' ').trim();
+  return cleanFeedText(text);
+}
+
+/**
+ * 피드 본문에 섞여 오는 공지 서식을 걷어낸다.
+ *
+ * KNVD 같은 기관 공지는 "□ 개요 o 제품명社는 ... \[1\]" 형태로 내려온다.
+ * 그대로 두면 한 줄 요약 자리가 글머리 기호로 채워져 3~5초 안에 읽히지 않는다.
+ * 내용을 바꾸지 않고 서식 문자만 지운다.
+ */
+export function cleanFeedText(text) {
+  if (typeof text !== 'string' || text === '') return '';
+
+  // 역슬래시로 이스케이프된 괄호를 되돌린다. "\[1\]" -> "[1]"
+  let cleaned = text.replace(/\\([[\]()])/g, '$1');
+
+  // 기관 공지 글머리가 있을 때만 글머리 정리를 적용한다.
+  // 영문 기사 본문의 알파벳 o를 건드리지 않기 위해 조건을 둔다.
+  if (/[□○▣▶]/.test(cleaned)) {
+    cleaned = cleaned.replace(/^[□○▣▶]\s*개요\s*/, '');  // 선두 "□ 개요"는 통째로 지운다
+    cleaned = cleaned.replace(/[□○▣▶]\s*/g, ' ');         // 남은 문단 기호
+    cleaned = cleaned.replace(/(^|\s)o(?=\s)/g, '$1');    // 홀로 선 o 글머리
+  }
+
+  return cleaned.replace(/\s+/g, ' ').trim();
 }
 
 export function truncate(text, limit) {
