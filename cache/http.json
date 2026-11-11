@@ -1,0 +1,39 @@
+{
+  "bleepingcomputer": {
+    "etag": "fe135fa6936ee1cb3372a580309ee6a4",
+    "lastModified": "Wed, 11 Nov 2026 13:52:31 GMT"
+  },
+  "cisa-kev": {
+    "etag": "\"1c3dcf-65ff0bbebda90\"",
+    "lastModified": "Tue, 10 Nov 2026 19:03:29 GMT"
+  },
+  "thehackernews": {
+    "lastModified": "Wed, 11 Nov 2026 13:02:15 GMT"
+  },
+  "krebs": {
+    "lastModified": "Tue, 10 Nov 2026 21:55:03 GMT"
+  },
+  "securityweek": {
+    "etag": "\"33724904f5fe4302423ac0bf56a9859b\"",
+    "lastModified": "Wed, 11 Nov 2026 13:37:23 GMT"
+  },
+  "boannews": {
+    "etag": "\"cdd0-65ffca0ed70e2-gzip\"",
+    "lastModified": "Wed, 11 Nov 2026 09:14:56 GMT"
+  },
+  "boannews-incident": {
+    "etag": "\"5514-65ffca0ee47bb-gzip\"",
+    "lastModified": "Wed, 11 Nov 2026 09:14:56 GMT"
+  },
+  "projectzero": {
+    "lastModified": "Wed, 11 Nov 2026 00:07:29 GMT"
+  },
+  "knvd": {},
+  "dailysecu": {
+    "etag": "\"cf15-66000793606a6-gzip\"",
+    "lastModified": "Wed, 11 Nov 2026 13:50:10 GMT"
+  },
+  "infosec-exchange": {
+    "etag": "W/\"26fbdb8565fb69d244ce3e9cd42397c3\""
+  }
+}

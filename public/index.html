@@ -3,16 +3,69 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=1920" />
-    <!-- 뷰어는 자기 호스트의 data/feed.json 하나만 받는다. 외부 도메인 요청을 CSP로 막는다. -->
+    <!--
+      뷰어는 자기 호스트의 data/feed.json 하나만 받는다.
+      대부분의 RSS 피드가 CORS 헤더를 주지 않아 브라우저에서 직접 받을 수 없으므로
+      수집기와 뷰어를 분리했고, 그 구조를 CSP로 강제한다.
+    -->
     <meta http-equiv="Content-Security-Policy" content="connect-src 'self'" />
     <title>보안 동향 월보드</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>보안 동향 월보드</h1>
-    <!-- JS가 아예 동작하지 않아도 흰 화면보다는 낫다. -->
-    <p id="fallback">데이터를 불러오는 중이다. 이 문구가 계속 보이면 뷰어 스크립트가 동작하지 않는 상태다.</p>
-    <div id="status"></div>
-    <ul id="items"></ul>
+    <!-- 자기 진단 배너. 갱신 중단·뷰어 업데이트 필요·데이터 연결 끊김을 알린다. -->
+    <div id="banner" data-visible="false" role="status"></div>
+
+    <div id="shell">
+      <div id="layout">
+        <header id="topbar">
+          <div id="clock">--:--:--</div>
+          <div id="board-title">보안 동향 월보드</div>
+          <div id="topbar-right">
+            <div id="failed-sources"></div>
+            <div id="freshness"></div>
+            <div id="status-dots"></div>
+          </div>
+        </header>
+
+        <main id="columns">
+          <section class="column" id="column-tier1">
+            <div class="column-heading">악용 중인 취약점</div>
+            <div id="tier1-cards"></div>
+          </section>
+
+          <section class="column" id="column-timeline">
+            <div class="column-heading">보안 동향</div>
+            <div id="timeline-viewport"></div>
+          </section>
+
+          <section class="column" id="column-social">
+            <div class="column-heading">연구자·소셜 (미검증)</div>
+            <div id="social-items"></div>
+          </section>
+        </main>
+
+        <footer id="ticker">
+          <div id="ticker-label">KEV 신규 등재</div>
+          <div id="ticker-viewport"><div id="ticker-track"></div></div>
+        </footer>
+      </div>
+    </div>
+
+    <!--
+      JS가 아예 동작하지 않아도 흰 화면보다는 낫다.
+      app.js가 첫 렌더링에 성공하면 이 블록을 지운다.
+    -->
+    <noscript>
+      <div id="fallback">
+        이 화면은 자동으로 갱신된다. 이 문구가 보이면 브라우저에서 스크립트가 꺼져 있다.
+      </div>
+    </noscript>
+    <div id="fallback">
+      보안 동향 월보드를 불러오는 중이다. 이 문구가 계속 보이면 뷰어 스크립트가 동작하지 않는
+      상태이므로 키오스크 PC를 재시작한다.
+    </div>
+
     <script src="app.js"></script>
   </body>
 </html>

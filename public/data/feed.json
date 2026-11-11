@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-11T13:46:07Z",
+  "generatedAt": "2026-11-11T13:53:04Z",
   "sources": [
     {
       "id": "cisa-kev",
       "name": "CISA KEV",
       "tier": "T1",
       "status": "stale",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 20,
       "error": null
     },
@@ -16,7 +16,7 @@
       "name": "KNVD 보안공지",
       "tier": "T1",
       "status": "ok",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 10,
       "error": null
     },
@@ -25,7 +25,7 @@
       "name": "보안뉴스",
       "tier": "T2",
       "status": "ok",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 50,
       "error": null
     },
@@ -34,7 +34,7 @@
       "name": "보안뉴스 사건·사고",
       "tier": "T2",
       "status": "ok",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 20,
       "error": null
     },
@@ -43,7 +43,7 @@
       "name": "데일리시큐",
       "tier": "T2",
       "status": "ok",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 50,
       "error": null
     },
@@ -51,17 +51,17 @@
       "id": "bleepingcomputer",
       "name": "BleepingComputer",
       "tier": "T3",
-      "status": "failed",
-      "lastSuccessAt": "2026-11-11T13:45:48Z",
+      "status": "ok",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 15,
-      "error": "HTTP 404"
+      "error": null
     },
     {
       "id": "thehackernews",
       "name": "The Hacker News",
       "tier": "T3",
       "status": "ok",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 50,
       "error": null
     },
@@ -70,7 +70,7 @@
       "name": "Krebs on Security",
       "tier": "T3",
       "status": "ok",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 10,
       "error": null
     },
@@ -79,7 +79,7 @@
       "name": "SecurityWeek",
       "tier": "T3",
       "status": "ok",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 10,
       "error": null
     },
@@ -88,7 +88,7 @@
       "name": "Google Project Zero",
       "tier": "T3",
       "status": "stale",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 10,
       "error": null
     },
@@ -106,7 +106,7 @@
       "name": "infosec.exchange",
       "tier": "T4",
       "status": "stale",
-      "lastSuccessAt": "2026-11-11T13:46:07Z",
+      "lastSuccessAt": "2026-11-11T13:53:04Z",
       "itemCount": 0,
       "error": null
     }
@@ -1021,23 +1021,6 @@
       "alsoFrom": []
     },
     {
-      "id": "2d47187b3dbc02e0",
-      "tier": "T2",
-      "sourceId": "boannews",
-      "sourceName": "보안뉴스",
-      "title": "유니뷰, 국내 파트너사 초청 중국 항저우 본사 투어 개최",
-      "titleKo": null,
-      "summaryKo": null,
-      "url": "https://www.boannews.com/news/articleView.html?idxno=147191",
-      "publishedAt": "2026-11-11T07:50:41Z",
-      "dateEstimated": false,
-      "lang": "ko",
-      "score": 33,
-      "badges": [],
-      "cve": [],
-      "alsoFrom": []
-    },
-    {
       "id": "777c1a6f6350acb5",
       "tier": "T2",
       "sourceId": "boannews",
@@ -1455,18 +1438,18 @@
       "alsoFrom": []
     },
     {
-      "id": "74289a15fb94903a",
-      "tier": "T3",
-      "sourceId": "thehackernews",
-      "sourceName": "The Hacker News",
-      "title": "Railway Says Stolen Customer AI Keys Led to $740,000 in Estimated Unauthorized Usage Charges",
+      "id": "2d47187b3dbc02e0",
+      "tier": "T2",
+      "sourceId": "boannews",
+      "sourceName": "보안뉴스",
+      "title": "유니뷰, 국내 파트너사 초청 중국 항저우 본사 투어 개최",
       "titleKo": null,
       "summaryKo": null,
-      "url": "https://thehackernews.com/2026/11/railway-says-stolen-customer-ai-keys.html",
-      "publishedAt": "2026-11-11T07:49:04Z",
+      "url": "https://www.boannews.com/news/articleView.html?idxno=147191",
+      "publishedAt": "2026-11-11T07:50:41Z",
       "dateEstimated": false,
-      "lang": "en",
-      "score": 28,
+      "lang": "ko",
+      "score": 25,
       "badges": [],
       "cve": [],
       "alsoFrom": []
@@ -1879,6 +1862,23 @@
       "cve": [
         "CVE-2026-58115"
       ],
+      "alsoFrom": []
+    },
+    {
+      "id": "74289a15fb94903a",
+      "tier": "T3",
+      "sourceId": "thehackernews",
+      "sourceName": "The Hacker News",
+      "title": "Railway Says Stolen Customer AI Keys Led to $740,000 in Estimated Unauthorized Usage Charges",
+      "titleKo": null,
+      "summaryKo": null,
+      "url": "https://thehackernews.com/2026/11/railway-says-stolen-customer-ai-keys.html",
+      "publishedAt": "2026-11-11T07:49:04Z",
+      "dateEstimated": false,
+      "lang": "en",
+      "score": 20,
+      "badges": [],
+      "cve": [],
       "alsoFrom": []
     },
     {
