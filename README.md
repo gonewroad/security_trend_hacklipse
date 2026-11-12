@@ -57,7 +57,8 @@ npm run serve          # http://localhost:8080 에서 확인
 | 실행 방식 | 키를 두는 곳 |
 |---|---|
 | 로컬 / NAS Docker | `.env` (`.gitignore`에 있다) |
-| GitHub Actions | 저장소 Secrets의 `LLM_API_KEY` |
+| GitHub Actions | **Workload Identity Federation** (아래). 장기 키를 두지 않는다 |
+| GitHub Actions (대안) | 저장소 Secrets의 `LLM_API_KEY` |
 
 키가 없으면 요약만 비고 화면은 원문 제목으로 정상 동작한다. 먼저 키 없이 띄워 보고,
 번역이 필요해지면 그때 넣어도 된다.
@@ -219,6 +220,53 @@ Gemini를 쓸 때와 달리 "무료 한도 안에 머무르기"가 아니라 "�
 
 제공자를 바꾸려면 `collector/summarize.js`의 `callProvider` 하나만 고치면 된다.
 사내 게이트웨이를 거친다면 `LLM_ENDPOINT`로 주소만 덮어써도 된다.
+
+### Workload Identity Federation (GitHub Actions)
+
+Actions에서는 장기 API 키 대신 WIF를 쓴다. 러너가 GitHub OIDC 토큰을 받아
+`/v1/oauth/token`에서 수명이 짧은 토큰으로 교환해 쓴다. **저장소에 키가 남지 않는다.**
+
+**1. Console에서 규칙을 만든다.** Settings → Workload Identity Federation →
+Connect workload → GitHub Actions. 일치 조건을 이렇게 좁힌다.
+
+| 항목 | 값 |
+|---|---|
+| GitHub 조직 | `gonewroad` |
+| 저장소 | `security_trend_hacklipse` |
+| 브랜치 / ref | `refs/heads/main` |
+| 허용된 이벤트 | 포크 PR 실행을 제외하는 쪽 |
+
+**공개 저장소에서는 이 네 칸을 반드시 채운다.** 저장소를 비워 두면 그 조직의 모든
+저장소가, 브랜치를 비워 두면 포크에서 올라온 풀 리퀘스트 실행까지 인증에 성공한다.
+브랜치를 `refs/heads/main`으로 고정하면 PR 실행은 subject가 달라 걸러진다.
+
+스코프는 `workspace:inference`가 있으면 그쪽을 고른다. Messages와 Models만 열려 있어
+이 용도에 정확히 맞는다. `workspace:developer`는 필요 이상으로 넓다.
+
+**2. 저장소 Variables에 ID를 넣는다.** Settings → Secrets and variables → Actions →
+Variables 탭이다. 비밀이 아니라 식별자이므로 Secrets가 아니라 Variables에 둔다.
+보안 경계는 이 ID들이 아니라 1번에서 좁힌 규칙이다.
+
+| 이름 | 예 |
+|---|---|
+| `ANTHROPIC_FEDERATION_RULE_ID` | `fdrl_...` |
+| `ANTHROPIC_ORGANIZATION_ID` | UUID 형식 |
+| `ANTHROPIC_SERVICE_ACCOUNT_ID` | `svac_...` |
+| `ANTHROPIC_WORKSPACE_ID` | `wrkspc_...` — 규칙이 워크스페이스 하나만 덮으면 비워 둔다 |
+
+**3. 워크플로는 이미 맞춰져 있다.** `permissions`에 `id-token: write`가 있고,
+OIDC 토큰을 `/tmp`에 받아 둔다(저장소 안에 쓰면 커밋에 섞인다).
+
+**알아둘 것**
+
+- 워크플로 파일이 **기본 브랜치에 있어야** 스케줄과 수동 실행이 동작한다.
+  규칙을 `refs/heads/main`으로 고정했다면 테스트 실행도 main에서 해야 한다.
+- GitHub OIDC JWT는 **한 번만 교환할 수 있다**(`jti` 재사용 차단). 수집기는 실행당
+  한 번만 교환하고 받은 토큰을 프로세스가 사는 동안 재사용하므로 문제가 없다.
+- 인증 우선순위는 공식 SDK와 같다. **`LLM_API_KEY`가 있으면 WIF보다 앞선다.**
+  Actions에서 WIF를 쓰려면 `LLM_API_KEY` 시크릿을 비워 두거나 지운다.
+- 교환 실패는 사유를 뭉뚱그린 401로 돌아온다. 실제 원인은 Console의 인증 기록에서 본다.
+- NAS Docker에는 OIDC 발급자가 없으므로 WIF는 자연히 꺼지고 `.env`의 키를 쓴다.
 
 ## 운영 중 알아둘 것
 

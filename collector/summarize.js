@@ -109,15 +109,87 @@ const SUMMARY_SCHEMA = {
   },
 };
 
+// --- Workload Identity Federation (WIF) ---
+// GitHub Actions처럼 OIDC 토큰을 발급받을 수 있는 환경에서는 장기 API 키 대신
+// 수명이 짧은 토큰을 받아 쓴다. 저장소에 키를 두지 않아도 된다.
+//
+// 필요한 환경변수가 모두 있을 때만 켜진다. 하나라도 없으면 null을 돌려주고
+// 기존 x-api-key 경로를 쓴다. NAS Docker에는 OIDC 발급자가 없으므로 자연히 꺼진다.
+
+const TOKEN_ENDPOINT = 'https://api.anthropic.com/v1/oauth/token';
+
+// 받은 토큰은 프로세스가 사는 동안만 들고 있는다.
+// GitHub의 OIDC JWT는 jti 재사용이 막혀 있어 한 번만 교환할 수 있다.
+let cachedFederationToken = null;
+
+async function exchangeFederationToken() {
+  const ruleId = process.env.ANTHROPIC_FEDERATION_RULE_ID;
+  const organizationId = process.env.ANTHROPIC_ORGANIZATION_ID;
+  const serviceAccountId = process.env.ANTHROPIC_SERVICE_ACCOUNT_ID;
+  const identityTokenFile = process.env.ANTHROPIC_IDENTITY_TOKEN_FILE;
+  const identityTokenInline = process.env.ANTHROPIC_IDENTITY_TOKEN;
+
+  // 넷 중 하나라도 비면 WIF를 쓰지 않는다.
+  if (!ruleId || !organizationId || !serviceAccountId || (!identityTokenFile && !identityTokenInline)) {
+    return null;
+  }
+
+  // 만료 30초 전까지는 들고 있던 토큰을 그대로 쓴다.
+  if (cachedFederationToken && cachedFederationToken.expiresAt - 30_000 > Date.now()) {
+    return cachedFederationToken.accessToken;
+  }
+
+  const assertion = identityTokenInline ?? (await fs.readFile(identityTokenFile, 'utf8')).trim();
+  if (assertion === '') throw new Error('OIDC 토큰 파일이 비어 있다');
+
+  const body = {
+    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+    assertion,
+    federation_rule_id: ruleId,
+    organization_id: organizationId,
+    service_account_id: serviceAccountId,
+  };
+  // 규칙이 여러 워크스페이스를 덮을 때만 필요하다. 하나뿐이면 서버가 알아서 고른다.
+  if (process.env.ANTHROPIC_WORKSPACE_ID) body.workspace_id = process.env.ANTHROPIC_WORKSPACE_ID;
+
+  const response = await fetch(process.env.ANTHROPIC_TOKEN_ENDPOINT || TOKEN_ENDPOINT, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '');
+    // 거절 사유는 일부러 뭉뚱그려 돌아온다. 실제 원인은 Console의 인증 기록에서 본다.
+    throw new Error(`WIF 토큰 교환 실패 HTTP ${response.status} ${detail.slice(0, 120)}`);
+  }
+
+  const payload = await response.json();
+  if (typeof payload?.access_token !== 'string') throw new Error('WIF 응답에 access_token이 없다');
+
+  cachedFederationToken = {
+    accessToken: payload.access_token,
+    expiresAt: Date.now() + (Number(payload.expires_in) || 600) * 1000,
+  };
+  return cachedFederationToken.accessToken;
+}
+
 /**
  * 제공자 호출. 교체 지점은 이 함수 하나다.
  * 기본값은 Anthropic Claude Messages API이며 키는 LLM_API_KEY로 받는다.
  * 키를 프론트엔드에 두지 않는다. 이 코드는 수집기에서만 돈다.
  */
 async function callProvider(promptText) {
+  // 인증 방식은 두 가지다. 공식 SDK와 같은 우선순위로 API 키가 WIF보다 앞선다.
   // ANTHROPIC_API_KEY는 Anthropic 도구들이 쓰는 관례적인 이름이라 함께 받아 준다.
   const apiKey = process.env.LLM_API_KEY || process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('LLM_API_KEY가 없다');
+  const federationToken = apiKey ? null : await exchangeFederationToken();
+  if (!apiKey && !federationToken) throw new Error('LLM_API_KEY도 WIF 설정도 없다');
+
+  const authHeaders = federationToken
+    ? { authorization: `Bearer ${federationToken}` }
+    : { 'x-api-key': apiKey };
 
   // 번역·요약은 가벼운 작업이라 Haiku로 충분하다. 품질이 모자라면 .env에서 Sonnet으로 올린다.
   const model = process.env.LLM_MODEL || 'claude-haiku-5-5';
@@ -128,7 +200,7 @@ async function callProvider(promptText) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
+      ...authHeaders,
       'anthropic-version': process.env.LLM_API_VERSION || '2026-10-21',
     },
     body: JSON.stringify({

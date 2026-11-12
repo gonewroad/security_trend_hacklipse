@@ -4,20 +4,44 @@ on:
     # 분을 0으로 두지 않는다. 정시는 부하가 몰려 지연되거나 건너뛴다.
     - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
+
 permissions:
   contents: write
+  # Workload Identity Federation에 필요하다. 이게 있어야 러너가 OIDC 토큰을 발급받는다.
+  id-token: write
+
 jobs:
   collect:
     runs-on: ubuntu-latest
+    env:
+      # 아래 네 값은 비밀이 아니라 식별자다. 저장소 Variables에 둔다.
+      # 보안 경계는 이 ID들이 아니라 Console의 페더레이션 규칙(조직·저장소·브랜치 고정)이다.
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+      ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+      # 규칙이 워크스페이스 하나만 덮으면 비워 둬도 된다.
+      ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+      # 저장소 밖에 둔다. 작업 디렉터리에 쓰면 커밋에 섞여 들어간다.
+      ANTHROPIC_IDENTITY_TOKEN_FILE: /tmp/anthropic-oidc.jwt
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - run: npm ci
+
+      - name: GitHub OIDC 토큰 받기
+        # id-token: write 권한이 있어야 아래 두 환경변수가 러너에 주어진다.
+        # audience를 api.anthropic.com으로 고정해야 페더레이션 규칙과 맞는다.
+        run: |
+          curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.anthropic.com" \
+            | jq -r .value > "$ANTHROPIC_IDENTITY_TOKEN_FILE"
+
+      # 수집기가 위 JWT를 /v1/oauth/token에서 짧은 수명의 토큰으로 교환해 쓴다.
+      # 장기 API 키를 저장소에 두지 않는다.
       - run: npm run collect
-        env:
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+
       - name: commit
         run: |
           git config user.name "collector"

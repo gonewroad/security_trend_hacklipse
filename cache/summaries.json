@@ -1,9 +1,5 @@
 {
   "entries": {
-    "202192f4e2460ecb": {
-      "titleKo": null,
-      "summaryKo": "SonicWall社는 자사 제품에서 발생하는 취약점을 해결한 보안 업데이트 발표 [1] 영향을 받는 버전을 사용 중인 사용자는 해결 방안에 따라 최신 버전으로…"
-    },
     "8e2d90868f217f7e": {
       "titleKo": null,
       "summaryKo": "美 CISA에서 현재 자주 악용되고 있는 취약점 목록 발표 [1] 영향을 받는 버전을 사용 중인 사용자는 해결 방안에 따라 최신 버전으로 업데이트 권고 영향을…"
@@ -11,6 +7,10 @@
     "751a5a3320498584": {
       "titleKo": null,
       "summaryKo": "OWASP 재단은 자사 제품에서 발생하는 취약점을 해결한 보안 업데이트 발표 [1][2] 영향을 받는 버전을 사용 중인 사용자는 해결 방안에 따라 최신 버전으로…"
+    },
+    "8205b269ffd7e1d4": {
+      "titleKo": null,
+      "summaryKo": "SonicWall社는 자사 제품에서 발생하는 취약점을 해결한 보안 업데이트 발표 [1] 영향을 받는 버전을 사용 중인 사용자는 해결 방안에 따라 최신 버전으로…"
     },
     "118f4f9a55e277b6": {
       "titleKo": null,
@@ -63,6 +63,10 @@
     "6b963ad54c9491f6": {
       "titleKo": null,
       "summaryKo": "팔로알토네트웍스(Palo Alto Networks)가 기업용 프리즈마 브라우저(Prisma Browser)에 크로미엄(Chromium) 보안 패치를 반영했다.…"
+    },
+    "5aa0721c72d18421": {
+      "titleKo": null,
+      "summaryKo": "11월 보안업데이트 개요 (총 13 종) 등급 : 긴급 (Critical) 8 종 , 중요 (Important) 5 종 발표일 : 2026.11.10.(화) 업…"
     },
     "ad73dc7556433279": {
       "titleKo": null,
