@@ -9,18 +9,27 @@
 // 요약은 편의 기능이고 원문 제목이 진짜 데이터다.
 // 어떤 실패도 수집을 멈추지 않는다. 실패하면 요약을 null로 두고 화면은 원문 제목을 보여준다.
 //
-// --- 무료 한도 확인 기록 (2026-11-11) ---
-// 공식 수치를 이 환경에서 확인하지 못했다. 확인한 내용은 다음과 같다.
-//   - Google은 더 이상 모든 프로젝트에 공통으로 적용되는 RPM/RPD 표를 공개하지 않는다.
-//     한도는 프로젝트 단위로 배정되며 Google AI Studio의 rate limits 페이지에서 확인해야 한다.
-//   - 2026년 4월 1일부터 무료 등급에서 Pro 계열이 빠지고 Flash·Flash-Lite만 남았다.
-//   - 2026년에 보고된 gemini-2.5-flash 무료 등급 일일 요청 수는 자료마다 크게 갈린다.
-//     가장 최근 보고는 하루 20요청, 그 전 자료들은 약 1,500요청이라고 적고 있다.
-//     어느 쪽도 공식 문서로 확인하지 못했으므로 코드에 수치를 박지 않는다.
-// 따라서 SUMMARY_DAILY_REQUEST_LIMIT의 기본값 100은 안전한 가정이 아니라 단순한 기본값이다.
-// 운영 전에 반드시 자기 프로젝트의 실제 한도를 확인해 .env에서 맞춰야 한다.
-// 배치가 10건이므로 100요청이면 하루 1,000건까지 요약할 수 있고,
-// 한도가 하루 20요청이라면 SUMMARY_DAILY_REQUEST_LIMIT=20으로 두면 하루 200건이 된다.
+// --- 비용과 한도 (제공자: Anthropic Claude API, 2026-11-12 확인) ---
+// Gemini와 달리 Claude API에는 무료 등급이 없다. 선불 크레딧 기반 종량제다.
+// 따라서 아래 네 겹의 장치는 "무료 한도를 넘지 않기" 위한 것이 아니라
+// "지출 상한을 두기" 위한 것으로 의미가 바뀐다. 동작은 그대로다.
+//
+// 가격(100K 토큰 이하 입력 기준, 백만 토큰당):
+//   claude-haiku-5-5   입력 $0.10 / 출력 $0.50   <- 기본값
+//   claude-sonnet-5-5  입력 $2.00 / 출력 $10.00
+//
+// 이 월보드의 실제 사용량 추정(신규 기사 하루 200건 = 10건씩 20요청):
+//   입력 하루 약 42,000 토큰, 출력 하루 약 40,000 토큰
+//   claude-haiku-5-5  하루 약 $0.02  -> 월 약 $0.7
+//   claude-sonnet-5-5 하루 약 $0.48  -> 월 약 $14
+// 추정치이며 모델의 사고(thinking) 토큰량에 따라 달라진다. 실제 금액은 Console에서 확인한다.
+//
+// 속도 제한(RPM/ITPM/OTPM)은 조직의 사용 등급마다 다르고 공통 표가 없다.
+// Console의 Limits 페이지에서 확인한다. 429를 받으면 그 배치만 건너뛰고
+// 다음 수집 주기(15분 뒤)에 다시 시도한다. 수집 자체는 멈추지 않는다.
+//
+// 지출 상한은 Console의 결제 설정에서 따로 거는 것을 권한다.
+// SUMMARY_DAILY_REQUEST_LIMIT은 이 프로그램이 스스로 지키는 상한일 뿐이다.
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -84,42 +93,80 @@ export async function saveSummaryCache(cache) {
 
 // ---------------------------------------------------------------- 제공자
 
+// 구조화 출력 스키마. 모델이 이 형태를 벗어난 JSON을 내놓지 못하게 막는다.
+// 길이 제한도 함께 걸어 두지만, 모델이 지켰는지는 validateBatchResult에서 다시 검사한다.
+const SUMMARY_SCHEMA = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      titleKo: { type: ['string', 'null'], maxLength: 60 },
+      summaryKo: { type: ['string', 'null'], maxLength: 90 },
+    },
+    required: ['id', 'titleKo', 'summaryKo'],
+    additionalProperties: false,
+  },
+};
+
 /**
  * 제공자 호출. 교체 지점은 이 함수 하나다.
- * 기본값은 Google Gemini generateContent이며 키는 LLM_API_KEY로 받는다.
+ * 기본값은 Anthropic Claude Messages API이며 키는 LLM_API_KEY로 받는다.
  * 키를 프론트엔드에 두지 않는다. 이 코드는 수집기에서만 돈다.
  */
 async function callProvider(promptText) {
-  const apiKey = process.env.LLM_API_KEY;
+  // ANTHROPIC_API_KEY는 Anthropic 도구들이 쓰는 관례적인 이름이라 함께 받아 준다.
+  const apiKey = process.env.LLM_API_KEY || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('LLM_API_KEY가 없다');
 
-  const model = process.env.LLM_MODEL || 'gemini-2.5-flash';
+  // 번역·요약은 가벼운 작업이라 Haiku로 충분하다. 품질이 모자라면 .env에서 Sonnet으로 올린다.
+  const model = process.env.LLM_MODEL || 'claude-haiku-5-5';
   // LLM_ENDPOINT로 덮어쓸 수 있다. 사내 게이트웨이를 거치거나 테스트용 대역을 쓸 때 쓴다.
-  const endpoint =
-    process.env.LLM_ENDPOINT ||
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const endpoint = process.env.LLM_ENDPOINT || 'https://api.anthropic.com/v1/messages';
 
   const response = await fetch(endpoint, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': process.env.LLM_API_VERSION || '2026-10-21',
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: promptText }] }],
-      generationConfig: {
-        temperature: 0,          // 번역이므로 흔들릴 이유가 없다
-        responseMimeType: 'application/json',
+      model,
+      max_tokens: 8000,
+      // temperature는 보내지 않는다. 현재 API 버전에서는 값을 주면 400이 돌아온다.
+      output_config: {
+        // 짧은 제목 번역이라 깊이 생각할 이유가 없다. 사고 토큰도 출력 요금이다.
+        effort: 'low',
+        // 구조화 출력. 모델이 설명을 덧붙이거나 코드펜스를 씌우는 것을 원천 차단한다.
+        format: { type: 'json_schema', schema: SUMMARY_SCHEMA },
       },
+      messages: [{ role: 'user', content: promptText }],
     }),
     signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
   });
 
   if (!response.ok) {
     const detail = await response.text().catch(() => '');
+    // 429는 조직 등급별 속도 제한이다. 이 배치만 건너뛰고 다음 주기에 다시 시도한다.
     throw new Error(`제공자 HTTP ${response.status} ${detail.slice(0, 120)}`);
   }
 
   const payload = await response.json();
-  const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (typeof text !== 'string') throw new Error('제공자 응답에 텍스트가 없다');
+
+  // 안전 분류기가 요청을 거절하면 HTTP 200에 stop_reason이 refusal로 온다.
+  // content를 읽기 전에 반드시 확인한다.
+  if (payload?.stop_reason === 'refusal') {
+    throw new Error(`제공자가 요청을 거절했다 (${payload?.stop_details?.category ?? '사유 미상'})`);
+  }
+
+  // content는 블록 배열이다. thinking 블록이 섞여 올 수 있으므로 text 블록만 모은다.
+  const text = (Array.isArray(payload?.content) ? payload.content : [])
+    .filter((block) => block?.type === 'text' && typeof block.text === 'string')
+    .map((block) => block.text)
+    .join('');
+
+  if (text.trim() === '') throw new Error('제공자 응답에 텍스트가 없다');
   return text;
 }
 
