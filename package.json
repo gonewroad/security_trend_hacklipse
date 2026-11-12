@@ -8,8 +8,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "collect": "node collector/index.js",
-    "verify-sources": "node scripts/verify-sources.js",
+    "collect": "node --env-file-if-exists=.env collector/index.js",
+    "verify-sources": "node --env-file-if-exists=.env scripts/verify-sources.js",
     "serve": "node scripts/serve.js public"
   },
   "dependencies": {

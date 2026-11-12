@@ -39,11 +39,28 @@ scheduler.js     NAS용 주기 실행기
 
 ```bash
 npm install
+cp .env.example .env   # 요약을 쓸 때만. LLM_API_KEY를 채운다
 npm run collect        # feed.json 생성
 npm run serve          # http://localhost:8080 에서 확인
 ```
 
+`npm run collect`과 `npm run verify-sources`는 `--env-file-if-exists=.env`로 돈다.
+`.env`가 없으면 그냥 넘어가고, 컨테이너나 셸이 넘겨준 환경변수가 `.env`보다 우선한다.
+그래서 Docker(`env_file`)와 Actions(`env:`) 경로는 그대로 동작한다.
+
 `npm run serve`는 개발 확인용 정적 서버다. 운영에서는 nginx가 `public/`을 제공한다.
+
+### API 키를 두는 곳
+
+키는 세 곳 중 하나에만 둔다. **어느 경우에도 채팅창이나 커밋되는 파일에 넣지 않는다.**
+
+| 실행 방식 | 키를 두는 곳 |
+|---|---|
+| 로컬 / NAS Docker | `.env` (`.gitignore`에 있다) |
+| GitHub Actions | 저장소 Secrets의 `LLM_API_KEY` |
+
+키가 없으면 요약만 비고 화면은 원문 제목으로 정상 동작한다. 먼저 키 없이 띄워 보고,
+번역이 필요해지면 그때 넣어도 된다.
 
 ## 방식 A — NAS Docker (운영 기본)
 

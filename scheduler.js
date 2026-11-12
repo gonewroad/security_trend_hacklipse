@@ -30,7 +30,9 @@ function runCollector(tiers) {
     const label = tiers.join(',');
     console.log(`[scheduler] ${new Date().toISOString()} 수집 시작 tiers=${label}`);
 
-    const child = spawn(process.execPath, [collectorPath, `--tiers=${label}`], {
+    // --env-file-if-exists로 .env를 읽는다. 파일이 없으면 그냥 넘어가고,
+    // 컨테이너가 넘겨준 환경변수가 파일보다 우선한다(Docker·Actions 경로를 깨지 않는다).
+    const child = spawn(process.execPath, ['--env-file-if-exists=.env', collectorPath, `--tiers=${label}`], {
       cwd: projectRoot,
       stdio: 'inherit',
     });

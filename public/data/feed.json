@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-12T06:26:35Z",
+  "generatedAt": "2026-11-12T06:30:47Z",
   "sources": [
     {
       "id": "cisa-kev",
       "name": "CISA KEV",
       "tier": "T1",
       "status": "stale",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 20,
       "error": null
     },
@@ -16,7 +16,7 @@
       "name": "KNVD 보안공지",
       "tier": "T1",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 10,
       "error": null
     },
@@ -25,7 +25,7 @@
       "name": "보안뉴스",
       "tier": "T2",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 50,
       "error": null
     },
@@ -34,7 +34,7 @@
       "name": "보안뉴스 사건·사고",
       "tier": "T2",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 20,
       "error": null
     },
@@ -43,7 +43,7 @@
       "name": "데일리시큐",
       "tier": "T2",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 50,
       "error": null
     },
@@ -52,7 +52,7 @@
       "name": "BleepingComputer",
       "tier": "T3",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 15,
       "error": null
     },
@@ -61,7 +61,7 @@
       "name": "The Hacker News",
       "tier": "T3",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 50,
       "error": null
     },
@@ -70,7 +70,7 @@
       "name": "Krebs on Security",
       "tier": "T3",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 10,
       "error": null
     },
@@ -79,7 +79,7 @@
       "name": "SecurityWeek",
       "tier": "T3",
       "status": "ok",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 10,
       "error": null
     },
@@ -88,7 +88,7 @@
       "name": "Google Project Zero",
       "tier": "T3",
       "status": "stale",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 10,
       "error": null
     },
@@ -106,7 +106,7 @@
       "name": "infosec.exchange",
       "tier": "T4",
       "status": "stale",
-      "lastSuccessAt": "2026-11-12T06:26:35Z",
+      "lastSuccessAt": "2026-11-12T06:30:47Z",
       "itemCount": 0,
       "error": null
     }
@@ -1133,23 +1133,6 @@
       "alsoFrom": []
     },
     {
-      "id": "c2db2e2f8f42b26e",
-      "tier": "T2",
-      "sourceId": "dailysecu",
-      "sourceName": "데일리시큐",
-      "title": "지갑 주소·거래 ID 입력하면 AI가 자금 흐름 추적...웁살라시큐리티 ‘센티넬TX’ 공개",
-      "titleKo": null,
-      "summaryKo": "블록체인 보안 기업 웁살라시큐리티(Uppsala Security)가 AI 에이전트 기반 가상자산 조사 서비스 ‘SentinelTX(센티넬TX)’를 정식 출시했다…",
-      "url": "https://www.dailysecu.com/news/articleView.html?idxno=209466",
-      "publishedAt": "2026-11-12T05:28:22Z",
-      "dateEstimated": false,
-      "lang": "ko",
-      "score": 40,
-      "badges": [],
-      "cve": [],
-      "alsoFrom": []
-    },
-    {
       "id": "95bc7c63c87673bf",
       "tier": "T3",
       "sourceId": "thehackernews",
@@ -1268,23 +1251,21 @@
       ]
     },
     {
-      "id": "ca7973eb6685c229",
+      "id": "c2db2e2f8f42b26e",
       "tier": "T2",
-      "sourceId": "boannews",
-      "sourceName": "보안뉴스",
-      "title": "‘해피포인트 운영사’ SPC그룹 산하 섹타나인 개인정보 유출",
+      "sourceId": "dailysecu",
+      "sourceName": "데일리시큐",
+      "title": "지갑 주소·거래 ID 입력하면 AI가 자금 흐름 추적...웁살라시큐리티 ‘센티넬TX’ 공개",
       "titleKo": null,
-      "summaryKo": "해피포인트 운영사 섹타나인에서 해킹으로 인한 개인정보 유출 사고가 발생했다.섹타나인은 12일 “6일 발생한 가맹점 관리자 계정 침해 사고와 관련해 조사 및 후속…",
-      "url": "https://www.boannews.com/news/articleView.html?idxno=147199",
-      "publishedAt": "2026-11-12T00:30:42Z",
+      "summaryKo": "블록체인 보안 기업 웁살라시큐리티(Uppsala Security)가 AI 에이전트 기반 가상자산 조사 서비스 ‘SentinelTX(센티넬TX)’를 정식 출시했다…",
+      "url": "https://www.dailysecu.com/news/articleView.html?idxno=209466",
+      "publishedAt": "2026-11-12T05:28:22Z",
       "dateEstimated": false,
       "lang": "ko",
-      "score": 38,
+      "score": 33,
       "badges": [],
       "cve": [],
-      "alsoFrom": [
-        "보안뉴스 사건·사고"
-      ]
+      "alsoFrom": []
     },
     {
       "id": "0300de76d146cf31",
@@ -1695,21 +1676,23 @@
       "alsoFrom": []
     },
     {
-      "id": "97b3af6a3ca645c2",
+      "id": "ca7973eb6685c229",
       "tier": "T2",
-      "sourceId": "dailysecu",
-      "sourceName": "데일리시큐",
-      "title": "인증기관 '디지서트' 내부 시스템 해킹…고객 업무 연락처 및 일부 여권·면허증 유출",
+      "sourceId": "boannews",
+      "sourceName": "보안뉴스",
+      "title": "‘해피포인트 운영사’ SPC그룹 산하 섹타나인 개인정보 유출",
       "titleKo": null,
-      "summaryKo": "글로벌 인증기관 디지서트(DigiCert)의 내부 업무 시스템이 침해돼 고객사 담당자의 업무용 연락처가 외부 계정에 노출됐다. 디지서트가 고객에게 보낸 한국어…",
-      "url": "https://www.dailysecu.com/news/articleView.html?idxno=209450",
-      "publishedAt": "2026-11-12T00:28:24Z",
+      "summaryKo": "해피포인트 운영사 섹타나인에서 해킹으로 인한 개인정보 유출 사고가 발생했다.섹타나인은 12일 “6일 발생한 가맹점 관리자 계정 침해 사고와 관련해 조사 및 후속…",
+      "url": "https://www.boannews.com/news/articleView.html?idxno=147199",
+      "publishedAt": "2026-11-12T00:30:42Z",
       "dateEstimated": false,
       "lang": "ko",
-      "score": 33,
+      "score": 30,
       "badges": [],
       "cve": [],
-      "alsoFrom": []
+      "alsoFrom": [
+        "보안뉴스 사건·사고"
+      ]
     },
     {
       "id": "f829b6f59404fa1c",
@@ -1819,6 +1802,23 @@
       "dateEstimated": false,
       "lang": "en",
       "score": 28,
+      "badges": [],
+      "cve": [],
+      "alsoFrom": []
+    },
+    {
+      "id": "97b3af6a3ca645c2",
+      "tier": "T2",
+      "sourceId": "dailysecu",
+      "sourceName": "데일리시큐",
+      "title": "인증기관 '디지서트' 내부 시스템 해킹…고객 업무 연락처 및 일부 여권·면허증 유출",
+      "titleKo": null,
+      "summaryKo": "글로벌 인증기관 디지서트(DigiCert)의 내부 업무 시스템이 침해돼 고객사 담당자의 업무용 연락처가 외부 계정에 노출됐다. 디지서트가 고객에게 보낸 한국어…",
+      "url": "https://www.dailysecu.com/news/articleView.html?idxno=209450",
+      "publishedAt": "2026-11-12T00:28:24Z",
+      "dateEstimated": false,
+      "lang": "ko",
+      "score": 25,
       "badges": [],
       "cve": [],
       "alsoFrom": []
